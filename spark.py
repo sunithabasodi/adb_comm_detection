@@ -144,7 +144,6 @@ if __name__ == '__main__':
     print "Loading network..."
     load_network()
     print "done."
-
     failures = 0
     def test(actual, expected, test_name):
         global failures  #lol python scope
