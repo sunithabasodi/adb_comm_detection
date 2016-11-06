@@ -144,6 +144,7 @@ if __name__ == '__main__':
     print "Loading network..."
     load_network()
     print "done."
+    nx.write_gexf(network, "facebook.gexf")
     failures = 0
     def test(actual, expected, test_name):
         global failures  #lol python scope
@@ -154,9 +155,11 @@ if __name__ == '__main__':
         except AssertionError as e:
             print e
             failures += 1
-
+    #Number of nodes
     test(network.order(), 4039, "order")
+    #Number of Edges
     test(network.size(), 88234, "size")
+    #Average clustering coefficient
     test(round(nx.average_clustering(network),4), 0.6055, "clustering")
     nx.draw(network)
     plt.show()

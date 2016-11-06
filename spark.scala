@@ -1,13 +1,19 @@
+val FB_DATA="Dataset/facebook/"
+val TW_DATA="Dataset/twitter/"
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
-val fb_dir="Dataset\facebook"
-val circles = sc.textFile(fb_dir+"\\"+"0"+".circles")
-val circlesRDD
-
-case class spark.pycircles(circleID: String, nodeIDs: Seq[Int])
-case class edges(to: Int, from: Int)
-case class feat(nodeID: Int, features: Seq[Int])
-case class egofeat(egoID: Int, features: Seq[Int])
-case class featnames(featureID: Int, features_names:Seq[String])
-
-case class egoNet [egoNetID, circles:circles,edges:edges,feat:feat,egofeat:egofeat,featnames:featnames]
+import scala.math.abs
+import breeze.linalg.SparseVector
+import org.graphstream.graph.{Graph => GraphStream}
+object FacebookEgoGraph {
+  def main(args: Array[String]) {
+    val sc = new SparkContext("local", "Facebook ego net on graphx")
+    val graph = GraphLoader.edgeListFile(sc,FB_DATA+"facebook_combined.txt", numEdgePartitions = 4)
+    graph.vertices.foreach(v => println(v))
+    println("Number of vertices : " + graph.vertices.count())
+    println("Number of edges : " + graph.edges.count())
+    println("Triangle counts :" + graph.connectedComponents.triangleCount().vertices.collect().mkString("\n"));
+  }
+}
