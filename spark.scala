@@ -1,7 +1,5 @@
 val FB_DATA="Dataset/facebook/"
 val TW_DATA="Dataset/twitter/"
-val conf = new SparkConf()
-conf.set("spark.driver.extraClassPath", "jars/*")
 
 import org.apache.spark.SparkContext._
 import org.apache.spark.graphx._
@@ -15,9 +13,78 @@ import breeze.linalg._
 import breeze.plot._
 import breeze.linalg.SparseVector
 
+//egoNetwork Edge loader
+
 val FacebookEgoGraph = GraphLoader.edgeListFile(sc,FB_DATA+"facebook_combined.txt", numEdgePartitions = 32)
 
+println("FacebookEgoGraph Loaded")
+println("Number of vertices : " + FacebookEgoGraph.vertices.count())
+println("Number of edges : " + FacebookEgoGraph.edges.count())
+println("Triangle counts :" + FacebookEgoGraph.connectedComponents.triangleCount().vertices.collect().mkString("\n"));
+
+val TwitterEgoGraph = GraphLoader.edgeListFile(sc,TW_DATA+"twitter_combined.txt", numEdgePartitions = 32)
+
+println("TwitterEgoGraph Loaded")
+println("Number of vertices : " + TwitterEgoGraph.vertices.count())
+println("Number of edges : " + TwitterEgoGraph.edges.count())
+println("Triangle counts :" + TwitterEgoGraph.connectedComponents.triangleCount().vertices.collect().mkString("\n"));
+
+
+//FacebookEgoGraph Visualisation
+
+val fbgraphStream: SingleGraph = new SingleGraph("EgoSocial")
+fbgraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+fbgraphStream.addAttribute("ui.quality")
+fbgraphStream.addAttribute("ui.antialias")
+
+
+for ((id,_) <- FacebookEgoGraph.vertices.collect()) {
+  val node = graphStream.addNode(id.toString).asInstanceOf[SingleNode]
+}
+for (Edge(x,y,_) <- FacebookEgoGraph.edges.collect()) {
+  val edge = graphStream.addEdge(x.toString ++ y.toString,
+  x.toString, y.toString,
+  true).
+  asInstanceOf[AbstractEdge]
+}
+graphStream.display()
+
+
+//TwitterEgoGraph Visualisation
+
+
+val fbgraphStream: SingleGraph = new SingleGraph("EgoSocial")
+twgraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+twgraphStream.addAttribute("ui.quality")
+twgraphStream.addAttribute("ui.antialias")
+
+for ((id,_) <- TwitterEgoGraph.vertices.collect()) {
+  val node = graphStream.addNode(id.toString).asInstanceOf[SingleNode]
+}
+for (Edge(x,y,_) <- TwitterEgoGraph.edges.collect()) {
+  val edge = graphStream.addEdge(x.toString ++ y.toString,
+  x.toString, y.toString,
+  true).
+  asInstanceOf[AbstractEdge]
+}
+graphStream.display()
+
+
+
+
+// Load Vertice Data -- Incomplete Parser
+
+
+FacebookEgoGraph.vertices.foreach(v => println(v))
+
+FacebookEgoGraph.degrees.
+map(t=> (t._2,t._1)).
+groupByKey.map(t =>(t._1,t._2.size)).
+sortBy(_._1).collect()
+
 type Feature = breeze.linalg.SparseVector[Int]
+
+//Only loads one ego network
 
 val featureMap: Map[Long, Feature] =
 Source.fromFile(FB_DATA+"0.feat").
@@ -56,53 +123,29 @@ egoNetwork.edges.filter(_.attr == 2).count()
 egoNetwork.edges.filter(_.attr == 1).count()
 
 
-val sc = new SparkContext("local", "Facebook ego net on graphx")
-val graphStream: SingleGraph = new SingleGraph("EgoSocial")
-graphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
-graphStream.addAttribute("ui.quality")
-graphStream.addAttribute("ui.antialias")
-
-
-for ((id,_) <- FacebookEgoGraph.vertices.collect()) {
-  val node = graphStream.addNode(id.toString).asInstanceOf[SingleNode]
-}
-for (Edge(x,y,_) <- FacebookEgoGraph.edges.collect()) {
-  val edge = graphStream.addEdge(x.toString ++ y.toString,
-  x.toString, y.toString,
-  true).
-  asInstanceOf[AbstractEdge]
-}
-graphStream.display()
-
-val nn = FacebookEgoGraph.numVertices
-val egoDegreeDistribution = degreeHistogram(FacebookEgoGraph).map({case
-  (d,n) => (d,n.toDouble/nn)})
-val f = Figure()
-val p1 = f.subplot(2,1,0)
-val x = new DenseVector(egoDegreeDistribution map (_._1.toDouble))
-val y = new DenseVector(egoDegreeDistribution map (_._2))
-
-p1.xlabel = "Degrees"
-p1.ylabel = "Distribution"
-p1 += plot(x, y)
-p1.title = "Degree distribution of social ego network"
-val p2 = f.subplot(2,1,1)
-val egoDegrees = FacebookEgoGraph.degrees.map(_._2).collect()
-p1.xlabel = "Degrees"
-p1.ylabel = "Histogram of node degrees"
-p2 += hist(egoDegrees, 10)
-
-
-FacebookEgoGraph.vertices.foreach(v => println(v))
-
-FacebookEgoGraph.degrees.
-map(t=> (t._2,t._1)).
-groupByKey.map(t =>(t._1,t._2.size)).
-sortBy(_._1).collect()
-
-
 
 		// Function for computing degree distribution
+
+
+    val nn = FacebookEgoGraph.numVertices
+    val egoDegreeDistribution = degreeHistogram(FacebookEgoGraph).map({case
+      (d,n) => (d,n.toDouble/nn)})
+    val f = Figure()
+    val p1 = f.subplot(2,1,0)
+    val x = new DenseVector(egoDegreeDistribution map (_._1.toDouble))
+    val y = new DenseVector(egoDegreeDistribution map (_._2))
+
+    p1.xlabel = "Degrees"
+    p1.ylabel = "Distribution"
+    p1 += plot(x, y)
+    p1.title = "Degree distribution of social ego network"
+    val p2 = f.subplot(2,1,1)
+    val egoDegrees = FacebookEgoGraph.degrees.map(_._2).collect()
+    p1.xlabel = "Degrees"
+    p1.ylabel = "Histogram of node degrees"
+    p2 += hist(egoDegrees, 10)
+
+
 def degreeHistogram(net: Graph[Int, Int]): Array[(Int, Int)] =
 	FacebookEgoGraph.degrees.map(t => (t._2,t._1)).
 		  groupByKey.map(t => (t._1,t._2.size)).
