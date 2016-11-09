@@ -47,7 +47,7 @@ for (Edge(x,y,_) <- FacebookEgoGraph.edges.collect()) {
   true).
   asInstanceOf[AbstractEdge]
 }
-graphStream.display()
+fbgraphStream.display()
 
 
 //TwitterEgoGraph Visualisation
@@ -67,7 +67,7 @@ for (Edge(x,y,_) <- TwitterEgoGraph.edges.collect()) {
   true).
   asInstanceOf[AbstractEdge]
 }
-graphStream.display()
+twgraphStream.display()
 
 
 
