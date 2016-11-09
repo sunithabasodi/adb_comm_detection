@@ -1,19 +1,115 @@
 val FB_DATA="Dataset/facebook/"
 val TW_DATA="Dataset/twitter/"
-import org.apache.spark.SparkContext
+val conf = new SparkConf()
+conf.set("spark.driver.extraClassPath", "jars/*")
+
 import org.apache.spark.SparkContext._
 import org.apache.spark.graphx._
-import org.apache.spark.rdd.RDD
+import org.apache.spark.rdd._
+import scala.io.Source
 import scala.math.abs
-import breeze.linalg.SparseVector
 import org.graphstream.graph.{Graph => GraphStream}
-object FacebookEgoGraph {
-  def main(args: Array[String]) {
-    val sc = new SparkContext("local", "Facebook ego net on graphx")
-    val graph = GraphLoader.edgeListFile(sc,FB_DATA+"facebook_combined.txt", numEdgePartitions = 4)
-    graph.vertices.foreach(v => println(v))
-    println("Number of vertices : " + graph.vertices.count())
-    println("Number of edges : " + graph.edges.count())
-    println("Triangle counts :" + graph.connectedComponents.triangleCount().vertices.collect().mkString("\n"));
-  }
+import org.graphstream.graph.implementations._
+import org.jfree.chart.axis.ValueAxis
+import breeze.linalg._
+import breeze.plot._
+import breeze.linalg.SparseVector
+
+val FacebookEgoGraph = GraphLoader.edgeListFile(sc,FB_DATA+"facebook_combined.txt", numEdgePartitions = 32)
+
+type Feature = breeze.linalg.SparseVector[Int]
+
+val featureMap: Map[Long, Feature] =
+Source.fromFile(FB_DATA+"0.feat").
+getLines().
+map{line =>
+  val row = line split ' '
+  val key = abs(row.head.hashCode.toLong)
+  val feat = SparseVector(row.tail.map(_.toInt))
+  (key, feat)
+}.toMap
+
+val edges: RDD[Edge[Int]] =
+sc.textFile(FB_DATA+"0.edges").
+map {line =>
+val row = line split ' '
+val srcId = abs(row(0).hashCode.toLong)
+val dstId = abs(row(1).hashCode.toLong)
+val srcFeat = featureMap(srcId)
+val dstFeat = featureMap(dstId)
+val numCommonFeats = srcFeat dot dstFeat
+  Edge(srcId, dstId, numCommonFeats)
 }
+
+val vertices:  RDD[(VertexId, Feature)] =
+	sc.textFile(FB_DATA+"0.edges").
+		map{line =>
+			val key = abs(line.hashCode.toLong)
+			(key, featureMap(key))
+}
+
+
+val egoNetwork: Graph[Int,Int] = Graph.fromEdges(edges, 1)
+
+egoNetwork.edges.filter(_.attr == 3).count()
+egoNetwork.edges.filter(_.attr == 2).count()
+egoNetwork.edges.filter(_.attr == 1).count()
+
+
+val sc = new SparkContext("local", "Facebook ego net on graphx")
+val graphStream: SingleGraph = new SingleGraph("EgoSocial")
+graphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+graphStream.addAttribute("ui.quality")
+graphStream.addAttribute("ui.antialias")
+
+
+for ((id,_) <- FacebookEgoGraph.vertices.collect()) {
+  val node = graphStream.addNode(id.toString).asInstanceOf[SingleNode]
+}
+for (Edge(x,y,_) <- FacebookEgoGraph.edges.collect()) {
+  val edge = graphStream.addEdge(x.toString ++ y.toString,
+  x.toString, y.toString,
+  true).
+  asInstanceOf[AbstractEdge]
+}
+graphStream.display()
+
+val nn = FacebookEgoGraph.numVertices
+val egoDegreeDistribution = degreeHistogram(FacebookEgoGraph).map({case
+  (d,n) => (d,n.toDouble/nn)})
+val f = Figure()
+val p1 = f.subplot(2,1,0)
+val x = new DenseVector(egoDegreeDistribution map (_._1.toDouble))
+val y = new DenseVector(egoDegreeDistribution map (_._2))
+
+p1.xlabel = "Degrees"
+p1.ylabel = "Distribution"
+p1 += plot(x, y)
+p1.title = "Degree distribution of social ego network"
+val p2 = f.subplot(2,1,1)
+val egoDegrees = FacebookEgoGraph.degrees.map(_._2).collect()
+p1.xlabel = "Degrees"
+p1.ylabel = "Histogram of node degrees"
+p2 += hist(egoDegrees, 10)
+
+
+FacebookEgoGraph.vertices.foreach(v => println(v))
+
+FacebookEgoGraph.degrees.
+map(t=> (t._2,t._1)).
+groupByKey.map(t =>(t._1,t._2.size)).
+sortBy(_._1).collect()
+
+
+
+		// Function for computing degree distribution
+def degreeHistogram(net: Graph[Int, Int]): Array[(Int, Int)] =
+	FacebookEgoGraph.degrees.map(t => (t._2,t._1)).
+		  groupByKey.map(t => (t._1,t._2.size)).
+		  sortBy(_._1).collect()
+
+
+
+println("Number of vertices : " + FacebookEgoGraph.vertices.count())
+println("Number of edges : " + FacebookEgoGraph.edges.count())
+println("Triangle counts :" + FacebookEgoGraph.connectedComponents.triangleCount().vertices.collect().mkString("\n"));
