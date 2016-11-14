@@ -1,0 +1,20 @@
+Community detection algorithms implemented in Snap:
+
+1. AGM (structure-only)
+2. BigCLAM (structure-only)
+3. CODA (structure-only)
+4. Girvan-Newmann (structure-only)
+5. Clauset-Newmann-Moore (structure-only)
+6. CESNA (structure and node attributes)
+
+Compiling and executing
+
+1. Download the Snap-3.0 folder.
+2. Set current directory to the Snap-3.0 folder
+3. Run command
+ 	i. "make all"
+	ii. "cd examples/"
+	iii. "cd cesna/"
+	iv. "./cesna -c:10" //Number of desired communities = 10
+4. See cmtyvv.txt for community memberships.
+5. See weights.txt for community-attributes logistic weights
