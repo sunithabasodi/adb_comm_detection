@@ -32,42 +32,42 @@ println("Triangle counts :" + TwitterEgoGraph.connectedComponents.triangleCount(
 
 //FacebookEgoGraph Visualisation
 
-val fbgraphStream: SingleGraph = new SingleGraph("EgoSocial")
-fbgraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
-fbgraphStream.addAttribute("ui.quality")
-fbgraphStream.addAttribute("ui.antialias")
+val fbGraphStream: SingleGraph = new SingleGraph("EgoSocial")
+fbGraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+fbGraphStream.addAttribute("ui.quality")
+fbGraphStream.addAttribute("ui.antialias")
 
 
 for ((id,_) <- FacebookEgoGraph.vertices.collect()) {
-  val node = graphStream.addNode(id.toString).asInstanceOf[SingleNode]
+  val node = fbGraphStream.addNode(id.toString).asInstanceOf[SingleNode]
 }
 for (Edge(x,y,_) <- FacebookEgoGraph.edges.collect()) {
-  val edge = graphStream.addEdge(x.toString ++ y.toString,
+  val edge = fbGraphStream.addEdge(x.toString ++ y.toString,
   x.toString, y.toString,
   true).
   asInstanceOf[AbstractEdge]
 }
-fbgraphStream.display()
+fbGraphStream.display()
 
 
 //TwitterEgoGraph Visualisation
 
 
-val fbgraphStream: SingleGraph = new SingleGraph("EgoSocial")
-twgraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
-twgraphStream.addAttribute("ui.quality")
-twgraphStream.addAttribute("ui.antialias")
+val twGraphStream: SingleGraph = new SingleGraph("EgoSocial")
+twGraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+twGraphStream.addAttribute("ui.quality")
+twGraphStream.addAttribute("ui.antialias")
 
 for ((id,_) <- TwitterEgoGraph.vertices.collect()) {
-  val node = graphStream.addNode(id.toString).asInstanceOf[SingleNode]
+  val node = twgraphStream.addNode(id.toString).asInstanceOf[SingleNode]
 }
 for (Edge(x,y,_) <- TwitterEgoGraph.edges.collect()) {
-  val edge = graphStream.addEdge(x.toString ++ y.toString,
+  val edge = twGraphStream.addEdge(x.toString ++ y.toString,
   x.toString, y.toString,
   true).
   asInstanceOf[AbstractEdge]
 }
-twgraphStream.display()
+twGraphStream.display()
 
 
 
