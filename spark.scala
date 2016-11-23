@@ -33,11 +33,9 @@ println("Triangle counts :" + TwitterEgoGraph.connectedComponents.triangleCount(
 //FacebookEgoGraph Visualisation
 
 val fbGraphStream: SingleGraph = new SingleGraph("EgoSocial")
-fbGraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+fbGraphStream.addAttribute ("ui.stylesheet","url(file:///Users/ankushchauhan/adb_community_detection/style/graphStyleSheet)")
 fbGraphStream.addAttribute("ui.quality")
 fbGraphStream.addAttribute("ui.antialias")
-
-
 for ((id,_) <- FacebookEgoGraph.vertices.collect()) {
   val node = fbGraphStream.addNode(id.toString).asInstanceOf[SingleNode]
 }
@@ -49,12 +47,10 @@ for (Edge(x,y,_) <- FacebookEgoGraph.edges.collect()) {
 }
 fbGraphStream.display()
 
-
 //TwitterEgoGraph Visualisation
 
-
 val twGraphStream: SingleGraph = new SingleGraph("EgoSocial")
-twGraphStream.addAttribute ("ui.stylesheet","url(file://./style/graphStyleSheet.css)")
+twGraphStream.addAttribute ("ui.stylesheet","url(file:///Users/ankushchauhan/adb_community_detection/style/graphStyleSheet)")
 twGraphStream.addAttribute("ui.quality")
 twGraphStream.addAttribute("ui.antialias")
 
@@ -70,10 +66,7 @@ for (Edge(x,y,_) <- TwitterEgoGraph.edges.collect()) {
 twGraphStream.display()
 
 
-
-
 // Load Vertice Data -- Incomplete Parser
-
 
 FacebookEgoGraph.vertices.foreach(v => println(v))
 
