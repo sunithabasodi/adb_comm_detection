@@ -1,0 +1,12 @@
+Goal of the Project: Using Hadoop spark for storing, processing, analyzing and visualizing Community detection structure from real datasets
+Datasets used: Facebook, google groups, twitter
+Why not graph databases? Neo4J?
+Why Hadoop Spark? 
+Algorithms used to detect community structures?
+What are the different properies in data explored?
+Difficulty in obtaining edge attributed data? 
+Hadoop provides all the steps but not Visualization
+Advantes of the new Visualization tool compared to existing tools like in Neo4J?
+Comparision of all the algorithms using the new toolset
+Metrics used
+Future work - a survey paper for all this
