@@ -2,11 +2,47 @@ Goal of the Project: Using Hadoop spark for storing, processing, analyzing and v
 Datasets used: Facebook, google groups, twitter
 Why not graph databases? Neo4J?
 Why Hadoop Spark? 
+Describe Snap dataset 
 Algorithms used to detect community structures?
 What are the different properies in data explored?
-Difficulty in obtaining edge attributed data? 
 Hadoop provides all the steps but not Visualization
-Advantes of the new Visualization tool compared to existing tools like in Neo4J?
+	- Histogram of node count in a community
+	- Historgram of overlapping communities
+	- Enter a node which then displays it community details (CommunityID, number of members, node attributes, neighbor communities) 
+	
+Advantages of the new Visualization tool compared to existing tools like in Neo4J?
+	- Scalability
+	- iteractive visualization tool as in Neo4j
+	- community visualization tool
+	- node-community information tool
+
 Comparision of all the algorithms using the new toolset
-Metrics used
-Future work - a survey paper for all this
+Metrics used and runtime performance comparison 
+Future work - 
+a survey paper for all this
+Difficulty in obtaining edge attributed data? 
+
+
+
+NOTE: WE WILL NOT EXPLAIN ANY SNAP ALGORITHMS; IT IS NOT RELATED TO THE COURSE;
+
+Presentation - Max 8 min
+Demo - 8 Min
+
+
+Ankush:
+	- Hadoop spark; 
+	- Graph stream visualization
+	- Comparison of graphx with Neo4j and other graph processing system
+	- Scalability of spark and advantages ; flexibility/portability with other community detection algorithms 
+	- Future possibilities
+	
+Sunitha:
+	- Snap dataset and detection algorithms
+	- Creating a inmemory graph database for snap datasets
+	- interactive visualization with networkx viewer (nodes)
+	- interactive node-community queries
+	- community level interaction
+	
+
+Hamdi: (Please Update)
