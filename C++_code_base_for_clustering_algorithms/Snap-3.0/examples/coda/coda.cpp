@@ -71,8 +71,10 @@ int main(int argc, char* argv[]) {
     CD.MLEGradAscentParallel(0.0001, 1000, NumThreads, "", StepAlpha, StepBeta);
   }
   CD.GetCmtyVV(EstCmtyVVOut, EstCmtyVVIn);
-  TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.out.txt", EstCmtyVVOut, NIDNameH);
-  TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.in.txt", EstCmtyVVIn, NIDNameH);
+  //TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.out.txt", EstCmtyVVOut, NIDNameH);
+  //TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.in.txt", EstCmtyVVIn, NIDNameH);
+  TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.out.txt", EstCmtyVVOut);
+  TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.in.txt", EstCmtyVVIn);
 
   Catch
 

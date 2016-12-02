@@ -13,8 +13,8 @@ int main(int argc, char* argv[]) {
   TExeTm ExeTm;
   Try
   TStr OutFPrx = Env.GetIfArgPrefixStr("-o:", "", "Output Graph data prefix");
-  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", "../as20graph.txt", "Input edgelist file name");
-  const TStr LabelFNm = Env.GetIfArgPrefixStr("-l:", "", "Input file name for node names (Node ID, Node label) ");
+  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", "../../../../Dataset/facebook/facebook_combined.txt", "Input edgelist file name");
+  const TStr LabelFNm = Env.GetIfArgPrefixStr("-l:", "../../../../Dataset/facebook/facebook_node_name.txt", "Input file name for node names (Node ID, Node label) ");
   int OptComs = Env.GetIfArgPrefixInt("-c:", 100, "The number of communities to detect (-1: detect automatically)");
   const int MinComs = Env.GetIfArgPrefixInt("-mc:", 5, "Minimum number of communities to try");
   const int MaxComs = Env.GetIfArgPrefixInt("-xc:", 100, "Maximum number of communities to try");
@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
   PUNGraph G;
   TIntStrH NIDNameH;
   if (InFNm.IsSuffix(".ungraph")) {
+    printf("Undirected graph!!!!\n");
     TFIn GFIn(InFNm);
     G = TUNGraph::Load(GFIn);
   } else if (LabelFNm.Len() > 0) {
@@ -58,7 +59,8 @@ int main(int argc, char* argv[]) {
     RAGM.MLEGradAscentParallel(0.0001, 1000, NumThreads, "", StepAlpha, StepBeta);
   }
   RAGM.GetCmtyVV(EstCmtyVV);
-  TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.txt", EstCmtyVV, NIDNameH);
+  //TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.txt", EstCmtyVV, NIDNameH);
+  TAGMUtil::DumpCmtyVV(OutFPrx + "cmtyvv.txt", EstCmtyVV);
   TAGMUtil::SaveGephi(OutFPrx + "graph.gexf", G, EstCmtyVV, 1.5, 1.5, NIDNameH);
 
   Catch

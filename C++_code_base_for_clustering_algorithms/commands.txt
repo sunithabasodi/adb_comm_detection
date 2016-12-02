@@ -1,0 +1,21 @@
+./bigclam -i:../../../../Dataset/twitter/twitter_combined.txt  -l:../../../../Dataset/twitter/twitter_node_name.txt  -o:agm_twitter_
+./bigclam -i:../../../../Dataset/facebook/facebook_combined.txt  -l:../../../../Dataset/facebook/facebook_node_name.txt   -o:agm_facebook_
+
+
+./coda -i:../../../../Dataset/twitter/twitter_combined.txt  -l:../../../../Dataset/twitter/twitter_node_name.txt  -o:agm_twitter_
+./coda -i:../../../../Dataset/facebook/facebook_combined.txt  -l:../../../../Dataset/facebook/facebook_node_name.txt   -o:agm_facebook_
+
+./community -i:../../../../Dataset/twitter/twitter_combined.txt  -o:girvan_newmann_twitter_cmtyvvv.txt -a:1 
+./community -i:../../../../Dataset/facebook/facebook_combined.txt  -o:girvan_newmann_facebook_cmtyvvv.txt -a:1
+
+
+./community -i:../../../../Dataset/facebook/facebook_combined.txt  -o:clauset_newman_moore_facebook_cmtyvvv.txt -a:2
+./community -i:../../../../Dataset/twitter/twitter_combined.txt  -o:clauset_newman_moore_twitter_cmtyvvv.txt -a:2
+
+./agmfitmain -i:../../../../Dataset/twitter/twitter_combined.txt  -l:../../../../Dataset/twitter/twitter_node_name.txt    -e:0.1 -o:agm_twitter_
+./agmfitmain -i:../../../../Dataset/facebook/facebook_combined.txt  -l:../../../../Dataset/facebook/facebook_node_name.txt   -e:0.1 -o:agm_facebook_
+
+
+
+
+
