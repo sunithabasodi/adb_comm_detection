@@ -1,44 +1,65 @@
 import spark as sp
 import community as comm
 import networkx  as nx
+import graph_visualization as gv
 
-def plot_community(partition, graph):
-    import  matplotlib.pyplot as plt
-
-    num_of_partitions= len(set(partition.values()))
-    partition_color = [float(x) / (num_of_partitions - 1) for x in range(num_of_partitions)]
-    node_color_values = [float(partition[node])/(num_of_partitions-1) for node in graph.nodes() ]
-
-    plt.axis('off')
-    sp = nx.spring_layout(graph)
-    ec = nx.draw_networkx_edges(graph, pos=sp, alpha=0.1)
-    nc = nx.draw_networkx_nodes(graph, pos=sp, node_color=node_color_values,
-                                with_labels=False, cmap=plt.cm.jet)
-    plt.colorbar(nc, ticks=partition_color )
-    plt.show()
-
-
-def get_snap_alg_partitions(type, dataset_name) :
+def get_snap_alg_communities(type, dataset_name) :
     type=type.lower()
     file_name = '/home/sbasodi1/workspace/fall_16_adb_project/adb_comm_detection/alg_outputs/'+type+'_'+dataset_name+'_cmtyvv.txt'
 
     results_file = open(file_name)
     line_num=-1;
-    partition={}
-    partitioned_nodes=[]
+    community={}
     for line in results_file:
         line_num+=1
         nodes=line.split("\t")
         for x in nodes:
             x=x.strip()
             if x.isdigit() :
-                partition[int(x)]=line_num
-                partitioned_nodes.append(int(x))
+                key = int(x)
+                if not community.has_key(key) :
+                    community[key]=[]
 
-    return partition
+                community[key].append(line_num)
+
+    return community
 
 def display_metrics(partition, graph) :
     print 'Modularity: ',comm.modularity(partition, graph)
+
+def update_node_communities(communities, node_graph):
+    for (node_id, comm_ids) in communities.iteritems() :
+        node_graph.node[node_id]['comm'] = str(comm_ids)
+        node_graph.node[node_id]['num_comm'] = len(comm_ids)
+
+def get_community_graph(communities):
+    graph = nx.Graph()
+    comm_dict= {}
+    for (node_id, comm_ids) in communities.iteritems() :
+        for comm_id in comm_ids :
+           if not comm_dict.has_key(comm_id) :
+               comm_dict[comm_id]=[]
+           comm_dict[comm_id].append(node_id)
+    print "Num of Communities: ", len(comm_dict.keys())
+    keys= comm_dict.keys()
+    #Create community graph
+    for (comm_id, nodes) in comm_dict.iteritems():
+        graph.add_node(comm_id)
+        graph.node[comm_id]['nodes'] = str(nodes)
+        graph.node[comm_id]['num_nodes'] = len(nodes)
+
+    #Add edges
+    for (comm_id1, nodes1) in comm_dict.iteritems():
+        for (comm_id2, nodes2) in comm_dict.iteritems():
+            if comm_id1 != comm_id2 :
+                common_nodes = set(nodes1).intersection(set(nodes2))
+                if len(common_nodes) >0 :
+                    graph.add_edge(comm_id1, comm_id2)
+                    graph.edge[comm_id1][comm_id2]['nodes'] = str(list(common_nodes))
+                    graph.edge[comm_id1][comm_id2]['num_nodes'] = len(common_nodes)
+
+    return graph
+
 
 def analyze_dataset(dataset_name, type) :
 
@@ -56,20 +77,24 @@ def analyze_dataset(dataset_name, type) :
 
     if type=='all' :
         for t in ['bigclam', 'cesna', 'coda', 'gn','cnm', 'agm'] :
-            partition = get_snap_alg_partitions(t, dataset_obj.dataset_name)
-            display_metrics(partition, dataset_obj.network)
-            plot_community(partition, dataset_obj.network)
+            communities = get_snap_alg_communities(t, dataset_obj.dataset_name)
+            display_metrics(communities, dataset_obj.network)
+            gv.plot_community(communities, dataset_obj.network)
 
     elif type=='bp': #Best Partition
-        partition = comm.best_partition(dataset_obj.network)
-        display_metrics(partition, dataset_obj.network)
-        plot_community(partition, dataset_obj.network)
+        communities = comm.best_partition(dataset_obj.network)
+        display_metrics(communities, dataset_obj.network)
+        gv.plot_community(communities, dataset_obj.network)
 
     else:
-        partition = get_snap_alg_partitions(type, dataset_obj.dataset_name)
-        display_metrics(partition, dataset_obj.network)
-        plot_community(partition, dataset_obj.network)
+        communities = get_snap_alg_communities(type, dataset_obj.dataset_name)
+        #display_metrics(communities, dataset_obj.network)
+        #plot_nodes_community(communities, dataset_obj.network)
+        comm_graph= get_community_graph(communities)
+        update_node_communities(communities, dataset_obj.network)
+        gv.plot_community(comm_graph)
+        gv.show_communities(comm_graph)
 
 if __name__ == '__main__':
-    analyze_dataset("facebook", 'bp')
+    analyze_dataset("facebook", 'bigclam')
     #analyze_dataset("twitter", 'bp')
