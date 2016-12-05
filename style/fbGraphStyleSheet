@@ -1,0 +1,18 @@
+node {
+    size: 5px;
+    text-mode: hidden;
+    z-index: 1;
+    fill-mode: dyn-plain;
+    fill-color: "#3b5998", "#43a2ca";
+}
+edge {
+    shape: line;
+    fill-color: #fee4ce;
+    arrow-size: 1px, 1px;
+    z-index: 0;
+}
+
+node.important {
+	fill-color: red;
+	size: 15px;
+}
