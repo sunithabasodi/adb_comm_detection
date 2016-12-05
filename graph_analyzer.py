@@ -86,7 +86,7 @@ def analyze_dataset(dataset_name, type) :
     elif type=='bp': #Best Partition
         communities = comm.best_partition(dataset_obj.network)
         display_metrics(communities, dataset_obj.network)
-        gv.plot_nodes_community(communities, dataset_obj.network)
+        gv.plot_nodes_community_partitions(communities, dataset_obj.network)
 
     else:
         communities = get_snap_alg_communities(type, dataset_obj.dataset_name)
@@ -96,8 +96,10 @@ def analyze_dataset(dataset_name, type) :
         gv.show_communities(comm_graph)
         print "Plotting communities.."
         gv.plot_community(comm_graph)
-        #print "Plotting users with communities.."
-        #gv.plot_nodes_community(communities, dataset_obj.network)
+        print "Plotting users with communities.."
+        bp = comm.best_partition(dataset_obj.network)
+        display_metrics(bp, dataset_obj.network)
+        gv.plot_nodes_community_partitions(bp, dataset_obj.network)
         print "Done!!"
 
 

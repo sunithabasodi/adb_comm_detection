@@ -47,15 +47,29 @@ def plot_community(partition):
     #plt.colorbar(nc, ticks=partition_color )
     plt.show()
 
-def plot_nodes_community(node_communities, graph):
+def plot_nodes_community_partitions(node_communities, graph):
+    import  matplotlib.pyplot as plt
+
+    num_of_partitions= len(node_communities.values())
+    partition_color = [float(x) / (num_of_partitions - 1) for x in range(num_of_partitions)]
+    node_color_values = [float(node)/(num_of_partitions-1) for node in graph.nodes() ]
+
+    plt.axis('off')
+    sp = nx.spring_layout(graph)
+    ec = nx.draw_networkx_edges(graph, pos=sp, alpha=0.1)
+    nc = nx.draw_networkx_nodes(graph, pos=sp, node_color=node_color_values, node_size=30,
+                                with_labels=False, cmap=plt.cm.jet)
+    #plt.colorbar(nc, ticks=partition_color )
+    plt.title('Facebook Ego Network of Users')  # title
+    plt.show()
+    #plt.draw()
+
+def plot_nodes_community(node_communities, graph, hasCommCommunities=True):
     import  matplotlib.pyplot as plt
 
     comm=set()
     for (node_id, comm_ids) in node_communities.iteritems() :
-        if type(comm_ids) == list:
             comm.update(comm_ids)
-        else:
-            comm.add(comm_ids)
 
     num_of_partitions= len(comm)
     partition_color = [float(x) / (num_of_partitions - 1) for x in range(num_of_partitions)]
@@ -63,19 +77,16 @@ def plot_nodes_community(node_communities, graph):
     node_color_values = []
     for node in graph.nodes():
         if node_communities.has_key(node):
-            if type(node_communities[node]) == list :
-                if len(node_communities[node]) > 1:
-                    node_color_values.append(0)
-                else :
-                    node_color_values.append(float(min(node_communities[node])+1) / (num_of_partitions))
-            else:
-                node_color_values.append(float(node+1) / (num_of_partitions))
+            if len(node_communities[node]) > 1:
+                node_color_values.append(0)
+            else :
+                node_color_values.append(float(max(node_communities[node])) / (num_of_partitions-1))
 
     plt.axis('off')
     sp = nx.spring_layout(graph)
     ec = nx.draw_networkx_edges(graph, pos=sp, alpha=0.1)
     nc = nx.draw_networkx_nodes(graph, pos=sp, node_color=node_color_values, node_size=30,
-                                with_labels=False, cmap=plt.cm.jet)
+                                with_labels=False)
     #plt.colorbar(nc, ticks=partition_color )
     plt.title('Facebook Ego Network of Users')  # title
     plt.show()
