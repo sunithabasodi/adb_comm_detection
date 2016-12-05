@@ -57,6 +57,8 @@ def get_community_graph(communities):
                     graph.add_edge(comm_id1, comm_id2)
                     graph.edge[comm_id1][comm_id2]['nodes'] = str(list(common_nodes))
                     graph.edge[comm_id1][comm_id2]['num_nodes'] = len(common_nodes)
+    for (comm_id, nodes) in comm_dict.iteritems():
+        graph.node[comm_id]['conn_comm'] = graph.degree(comm_id)
 
     return graph
 
@@ -84,16 +86,21 @@ def analyze_dataset(dataset_name, type) :
     elif type=='bp': #Best Partition
         communities = comm.best_partition(dataset_obj.network)
         display_metrics(communities, dataset_obj.network)
-        gv.plot_community(communities, dataset_obj.network)
+        gv.plot_nodes_community(communities, dataset_obj.network)
 
     else:
         communities = get_snap_alg_communities(type, dataset_obj.dataset_name)
         #display_metrics(communities, dataset_obj.network)
-        #plot_nodes_community(communities, dataset_obj.network)
         comm_graph= get_community_graph(communities)
         update_node_communities(communities, dataset_obj.network)
-        gv.plot_community(comm_graph)
         gv.show_communities(comm_graph)
+        print "Plotting communities.."
+        gv.plot_community(comm_graph)
+        #print "Plotting users with communities.."
+        #gv.plot_nodes_community(communities, dataset_obj.network)
+        print "Done!!"
+
+
 
 if __name__ == '__main__':
     analyze_dataset("facebook", 'bigclam')
