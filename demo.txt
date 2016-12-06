@@ -43,11 +43,14 @@ println("Twitter Number of edges : " + TwitterCombinedGraph.edges.count());
 
 val ranks = FacebookCombinedGraph.pageRank(0.0001).vertices
 
+println("Facebook Triangle counts :" + FacebookCombinedGraph.connectedComponents.triangleCount().vertices.collect().mkString("\n"))
+println("Twitter Triangle counts :" + TwitterCombinedGraph.connectedComponents.triangleCount().vertices.collect().mkString("\n"));
+
 //Viz
 
 //FacebookCombinedGraph Visualisation
 val fbGraphStream: SingleGraph = new SingleGraph("EgoSocial");
-fbGraphStream.addAttribute ("ui.stylesheet","url(file:///Users/ankushchauhan/adb_community_detection/style/fbGraphStyleSheet)");
+fbGraphStream.addAttribute ("ui.stylesheet","url(file:///home/sbasodi1/workspace/fall_16_adb_project/adb_comm_detection/style/fbGraphStyleSheet)");
 fbGraphStream.addAttribute("ui.quality");
 fbGraphStream.addAttribute("ui.antialias");
 for ((id,_) <- FacebookCombinedGraph.vertices.collect()) {
@@ -61,3 +64,21 @@ for (Edge(x,y,_) <- FacebookCombinedGraph.edges.collect()) {
   asInstanceOf[AbstractEdge]
 }
 fbGraphStream.display()
+
+
+//TwitterCombinedGraph Visualisation
+val twGraphStream: SingleGraph = new SingleGraph("EgoSocial");
+twGraphStream.addAttribute ("ui.stylesheet","url(file:///home/sbasodi1/workspace/fall_16_adb_project/adb_comm_detection/style/twGraphStyleSheet)");
+twGraphStream.addAttribute("ui.quality");
+twGraphStream.addAttribute("ui.antialias");
+for ((id,_) <- TwitterCombinedGraph.vertices.collect()) {
+  val node = twGraphStream.addNode(id.toString).asInstanceOf[SingleNode]
+}
+
+for (Edge(x,y,_) <- TwitterCombinedGraph.edges.collect()) {
+  val edge = twGraphStream.addEdge(x.toString ++ y.toString,
+  x.toString, y.toString,
+  true).
+  asInstanceOf[AbstractEdge]
+}
+twGraphStream.display()

@@ -78,7 +78,7 @@ def analyze_dataset(dataset_name, type) :
     #print dataset_obj.network.size()
 
     if type=='all' :
-        for t in ['bigclam', 'cesna', 'coda', 'gn','cnm', 'agm'] :
+        for t in ['bigclam', 'cesna', 'gn','cnm', 'agm'] :
             communities = get_snap_alg_communities(t, dataset_obj.dataset_name)
             display_metrics(communities, dataset_obj.network)
             gv.plot_community(communities, dataset_obj.network)
@@ -96,9 +96,10 @@ def analyze_dataset(dataset_name, type) :
         gv.show_communities(comm_graph)
         print "Plotting communities.."
         gv.plot_community(comm_graph)
-        print "Plotting users with communities.."
+        print "Computing metrics users with communities.."
         bp = comm.best_partition(dataset_obj.network)
         display_metrics(bp, dataset_obj.network)
+        print "Plotting users with communities.."
         gv.plot_nodes_community_partitions(bp, dataset_obj.network)
         print "Done!!"
 

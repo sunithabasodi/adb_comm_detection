@@ -9,7 +9,7 @@ import networkx as nx
 from tkMessageBox import showinfo
 
 def show_communities(communities) :
-    app = Viewer(communities, title="Community Viewer", home_node=10, levels=100)
+    app = Viewer(communities, title="Community Viewer", home_node=13, levels=100)
     # app = GraphViewerApp(G, home_node='a', levels=2)
     app.mainloop()
 
