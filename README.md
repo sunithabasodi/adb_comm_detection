@@ -1,6 +1,6 @@
 ### We used Apache Spark for loading of the graphs and graph-parallel computation which iseventually stored on a HDFS using native Hadoop libraries and Hive for cluster distribution oftasks to worker nodes. Spark for graphs and graph-parallel computation GraphX extends theSparkRDDby introducing a newGraphabstraction including a growing collection of graphal-gorithmsandbuildersto simplify graph analytics tasks. To support graph computation Graphexposes a set of fundamental operators (e.g.,subgraph,joinVertices, and aggregateMessages).GraphStream is a Java library for the modeling and analysis of dynamic graphs.  We cangenerate, import, export, measure, layout and visualize them.  
-# Dataset used SNAP Facebook ego-net & Twitter Ego-Net
-# Community detection on complex graph networks using Apache Spark. 
+## Dataset used SNAP Facebook ego-net & Twitter Ego-Net
+## Community detection on complex graph networks using Apache Spark. 
 
 * Available from: https://www.researchgate.net/publication/311645849_Community_detection_on_complex_graph_networks_using_Apache_Spark
 
